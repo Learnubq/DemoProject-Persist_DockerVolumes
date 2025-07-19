@@ -1,0 +1,35 @@
+version: '3'
+services:
+  my-app:
+    image: 470633809269.dkr.ecr.eu-west-1.amazonaws.com/my-app:1.0
+    ports:
+      - "3000:3000"
+  mongodb:
+    image: mongo
+    ports:
+     - 27017:27017
+    environment:
+     - MONGO_INITDB_ROOT_USERNAME=admin
+     - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      # Host-volume-name:path-inside-of-container where MongoDB explicitly persists its data e.g. if you check
+      # it out online the dafault is "/data/db"
+      - mongo-data:/data/db
+  mongo-express:
+    image: mongo-express
+    ports:
+     - 8081:8081
+    restart: always
+    environment:
+     - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+     - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+     - ME_CONFIG_BASICAUTH_USERNAME=user
+     - ME_CONFIG_BASICAUTH_PASSWORD=pass
+     - ME_CONFIG_MONGODB_SERVER=mongodb
+     - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017
+# Here I will define the list of all the volumes I will need for any of my containers
+volumes:
+  # This is the name of the volume reference on host machine
+  mongo-data:
+    # Also need the driver - tells Docker to create the physical storage path on the local file system
+    driver: local
